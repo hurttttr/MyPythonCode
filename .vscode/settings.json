@@ -2,5 +2,7 @@
     "editor.formatOnType": true,
     "editor.formatOnSave": true,
     "python.languageServer": "Pylance",
-    "python.pythonPath": "D:\\Anaconda\\python.exe"
+    "python.pythonPath": "D:\\Anaconda\\python.exe",
+    "editor.snippetSuggestions": "bottom",
+    "editor.suggest.snippetsPreventQuickSuggestions": false
 }
