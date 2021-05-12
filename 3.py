@@ -6,5 +6,5 @@ headers = {
 }
 response = requests.get(url, headers=headers)
 content = response.content
-with open('1.html', 'wb') as f:
-    f.write(content)
+# with open('1.html', 'wb') as f:
+#     f.write(content)
