@@ -5,7 +5,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36'
 }
 url = 'https://www.qiushibaike.com/text/page/'
-pat = '<div class="content">.*?<span>(.*?)</span>'
+pat = '<div class="content">.*?<span>(.*?)</span>.*?</div>'
 for i in range(1,14):
     new_url = url + str(i)
     response = requests.get(url, headers=headers)
