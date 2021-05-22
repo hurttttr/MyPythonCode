@@ -23,6 +23,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 plt.bar(tuple(bvid[:10]), play[:10])
+plt.xticks(tuple(bvid[:10]),tuple(bvid[:10]),rotation=30)
 plt.title('视频播放量')
 
 plt.show()

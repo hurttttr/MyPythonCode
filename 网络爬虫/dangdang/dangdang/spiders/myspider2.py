@@ -1,14 +1,19 @@
 import scrapy
-from scrapy.http import Request
-from lxml import etree
 from dangdang.items import DangdangItem
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
 
-class JianguospiderSpider(scrapy.Spider):
-    name = 'jianguoSpider'
-    allowed_domains = [r'category.dangdang.com/cid4005712.html']
-    start_urls = ['http://category.dangdang.com/cid4005712.html']
 
-    def parse(self, response):
+class Myspider2Spider(CrawlSpider):
+    name = 'myspider2'
+    allowed_domains = ['dangdang.com']
+    start_urls = ['http://category.dangdang.com/pg1-cid4005627.html']
+
+    rules = (
+        Rule(LinkExtractor(allow=r'pg\d+'), callback='parse_item', follow=True),
+    )
+
+    def parse_item(self, response):
         lst = response.xpath('//ul[@class="bigimg cloth_shoplist"]/li')
         for i in lst:
             item = DangdangItem()
@@ -17,7 +22,3 @@ class JianguospiderSpider(scrapy.Spider):
             item['link'] = i.xpath('./p[@class="link"]/a/@href').extract()[0]
             item['comment'] = i.xpath('./p[@class="star"]/a/text()').extract()[0].replace('条评论','')
             yield item
-
-        for i in range(2,5):
-            url = 'http://category.dangdang.com/pg{}-cid4005627.html'.format(i)
-            yield Request(url,callback=self.parse)

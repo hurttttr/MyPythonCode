@@ -3,8 +3,8 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
 
+from requests.models import codes
 import scrapy
-
 
 class DangdangItem(scrapy.Item):
     # define the fields for your item here like:

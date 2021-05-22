@@ -5,21 +5,38 @@
 
 
 # useful for handling different item types with a single interface
+# import json
 from itemadapter import ItemAdapter
-import json
+import pymysql
 
 class DangdangPipeline:
     def __init__(self):
-        self.file = open('data.json', 'w', encoding='utf-8')
+        self.conn = pymysql.connect(
+            host='127.0.0.1',
+            port=3306,
+            user='root',
+            password='123456',
+            database='mydatabase',
+            charset='utf8'
+        )
         pass
 
     def process_item(self, item, spider):
-        line = json.dumps(dict(item), ensure_ascii=False,indent=4) + "\n"
-        self.file.write(line)
+        tmp=dict(item)
+        try:
+            with self.conn.cursor() as cursor:
+                sql = 'insert into spider(name,price,link,comment) values(%s, %s, %s, %s)'
+                cursor.execute(sql, (tmp['name'],tmp['price'],tmp['link'],tmp['comment']))
+                self.conn.commit()
+        except pymysql.DatabaseError:
+            self.conn.rollback()
         return item
+        
+    def __del__(self):
+        pass
 
     def open_spider(self, spider):
         pass
     def close_spider(self, spider):
-        self.file.close()
+        self.conn.close()
         pass
