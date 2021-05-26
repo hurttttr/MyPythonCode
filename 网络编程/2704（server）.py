@@ -1,12 +1,11 @@
 import socket
 import wx
 import math
+import threading
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # 定义窗口类
-
-
 class MyFrame(wx.Frame):
     # 初始化这里就是生成界面，然后绑定了按钮事件，其他没了
     def __init__(self):
@@ -31,14 +30,20 @@ class MyFrame(wx.Frame):
         s.listen(5)
         print("服务器启动·····")
         self.conn,self.addess=s.accept()
-        data = self.conn.recv(1024)
-        if data:
-            r = float(data.decode())
-            self.text.LabelText += "Radius received from client: {}\r\n".format(
-                r)
-            area = r*r*math.pi
-            self.text.LabelText += "Area is: {}\r\n".format(area)
-            self.conn.send(str(area).encode())
+        threadQQ = threading.Thread(target=self.thread_body, name="Srever")
+        threadQQ.start()
+
+
+    def thread_body(self):
+        while True:
+            data = self.conn.recv(1024)
+            if data:
+                r = float(data.decode())
+                self.text.LabelText += "Radius received from client: {}\r\n".format(
+                    r)
+                area = r * r * math.pi
+                self.text.LabelText += "Area is: {}\r\n".format(area)
+                self.conn.send(str(area).encode())
 
 
 class App(wx.App):
