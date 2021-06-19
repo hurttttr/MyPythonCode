@@ -6,8 +6,8 @@ from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 
-my_mail = ''
-key = ''
+my_mail = '945399100@qq.com'
+key = 'uwzqvygiogxtbebd'
 
 smtp_server = 'smtp.qq.com'
 
