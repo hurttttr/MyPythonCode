@@ -1,54 +1,43 @@
-headers = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
-}
-url = 'https://so.gushiwen.org/shiwens/'
-response = requests.get(url, headers=headers)
-response.encoding = 'utf-8'
-html = response.text
-div = re.findall(r'<div class="cont">(.*?)</div>', html, re.S)[11]
-chapter_info_list = re.findall(r'<a href="(.*?)">(.*?)</a>', div)
-gushi_total_list = []
-cnt = n = 0
-for index in chapter_info_list:
-    if cnt > 1500:
-        break
-    part_url, title = index
-    gushigroup_url = 'https://so.gushiwen.org'+part_url
-    gushigroup_response = requests.get(gushigroup_url, headers=headers)
-    gushigroup_response.encoding = 'utf-8'
-    gushigroup_html = gushigroup_response.text
-    gushigroup_info_list = re.findall(
-        r'<span><a href="(.*?)" target="_blank">(.*?)</a>\((.*?)\)</span>', gushigroup_html)
-    poem_lst = []
-    for group_index in gushigroup_info_list:
-        gushi_part_url, gushi_name, gushi_author = group_index
-        gushi_part_url = re.findall(
-            'shiwenv_(.*?)\.aspx', gushi_part_url)[0]
-        gushi_url = 'https://so.gushiwen.org/shiwenv_{}.aspx'.format(
-            gushi_part_url)
-        if gushi_url not in gushi_total_list:
-            gushi_total_list.append(gushi_url)
-            poem = gushi_total_list[cnt]
-            poem_url, poem_name, poem_author = poem, gushi_name, gushi_author
-            poem_response = requests.get(poem_url, headers=headers)
-            poem_response.encoding = 'utf-8'
-            poem_html = poem_response.text
-            dic = {}
-            try:
-                _, poem_body = re.findall(
-                    r'<div class="contson" id="contson(.*?)">(.*?)</div>', poem_html, re.S)[0]
-                yizuo = re.compile('.*(\(.*?\)).*').findall(
-                    poem_body)
-                if yizuo:
-                    poem_body = poem_body.replace(yizuo[0], '')
-                poem_body = poem_body.replace('\n', '')
-                poem_body = poem_body.replace('<br />', '\n')
-                poem_body = poem_body.replace('<p>', '')
-                poem_body = poem_body.replace('</p>', '')
+import openpyxl
+import random
+index = 1
+str = [['赵', '钱', '孙', '李'], ['伟', '昀', '琛', '东', '凡'], ['坤', '艳', '志', '新']]
+with open('sql.txt', 'w', encoding='utf-8') as f:
+    wb = openpyxl.load_workbook('图书.xlsx')
+    dic = {}
+    pressname = []
+    for i in wb:
+        sheet = i
+        last = sheet.max_column+1
+        lst = [sheet.cell(row=1, column=col).value for col in range(1, last)]
+        mlast = sheet.max_row+1
+        for row in range(2, mlast):
+            imformation = [sheet.cell(
+                row=row, column=col).value for col in range(1, last)]
+            # print(imformation)
+            if imformation[2] not in pressname:
+                pressname.append(imformation[2])
+            dic[imformation[2]] = dic.get(
+                imformation[2], []) + [imformation[1]]
+            n = random.randint(1, 5)
+            for j in range(n):
+                sql = "insert 图书表(book_id, book_name, ISBN, author) values('{:0>4}', '{}', '{}', '{}')".format(
+                    index, imformation[0], imformation[1], imformation[3])
 
-                print('第' + str(cnt+1) + '首\t' + poem_name)
-                cnt += 1
+                index += 1
+                # f.write(sql)
+                # f.write('\n')
+    print(dic)
+    press = ['高等教育出版社', '上海远东出版社', '人民教育出版社', '清华大学出版社',
+             '机械工业出版社', '人民邮电出版社', '北京大学出版社', '中国人民大学出版社']
 
-                poem_lst.append(dic)
-            except:
-                gushi_total_list.pop()
+    ord = 1
+    for i in press:
+        ISBN_list = dic[i]
+        order = '950{:0>2}'.format(ord)
+        ord += 1
+
+        for j in ISBN_list:
+            sql = "insert into 订购表 values('{}','{}')".format(
+                j, order,)
+            print(sql)
